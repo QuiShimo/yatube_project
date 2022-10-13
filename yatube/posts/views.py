@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Group, Post
+from posts.models import Group, Post
 
 
-# Create your views here.
 def index(request):
     template = 'posts/index.html'
-    posts = Post.objects.order_by('-pub_date')[:10]
+    posts = Post.objects.all()[:10]
     context = {
         'title': 'Последние обновления на сайте',
         'posts': posts,
@@ -17,7 +16,7 @@ def index(request):
 def group_posts(request, slug):
     template = 'posts/group_list.html'
     group = get_object_or_404(Group, slug=slug)
-    posts = Post.objects.filter(group=group).order_by('-pub_date')[:10]
+    posts = group.posts.all()[:10]
     context = {
         'title': f'Записи сообщества {group}',
         'group': group,
