@@ -18,8 +18,8 @@
         </ul>
         <p>{{ post.text }}</p>
         {% if post.group %}
-            <a href="{% url 'group_posts:group_posts_list' post.group.slug %}">
-              Все записи группы
+            <a href="{% url 'posts:group_list' post.group.slug %}">
+              все записи группы
             </a>
         {% endif %}
       </article>
