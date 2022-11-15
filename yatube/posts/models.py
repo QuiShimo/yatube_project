@@ -30,7 +30,7 @@ class Post(models.Model):
     )
 
     def __str__(self):
-        return self.text
+        return self.text[:30]
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
