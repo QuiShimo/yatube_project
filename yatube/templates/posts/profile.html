@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Профайл пользователя {{ post.author.get_full_name }}
+  Профайл пользователя {{ author.get_full_name }}
 {% endblock title %}
 
 {% block content %}
 
-  <h1>Все посты пользователя {{ post.author.get_full_name }} </h1>
+  <h1>Все посты пользователя {{ author.get_full_name }} </h1>
   <h3>Всего постов: {{ posts_count }} </h3>   
   <div class="container">
     {% for post in page_obj %}
       <article>
         <ul>
           <li>
-            Автор: {{ post.author.get_full_name }}
+            Автор: {{ author.get_full_name }}
           </li>
           <li>
             Дата публикации: {{ post.pub_date|date:"d E Y" }}
