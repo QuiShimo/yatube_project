@@ -37,9 +37,7 @@ class Group(models.Model):
 class Post(models.Model):
     text = models.TextField(
         verbose_name='Текст записи',
-        help_text=(
-            'Напиши о чем угодно, но не обижай других пользователей '
-        ),
+        help_text='Напиши о чем угодно, но не обижай других пользователей',
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -73,7 +71,7 @@ class Post(models.Model):
     )
 
     def __str__(self):
-        return self.text[:30]
+        return self.text[:15]
 
     class Meta:
         ordering = ('-pub_date',)
