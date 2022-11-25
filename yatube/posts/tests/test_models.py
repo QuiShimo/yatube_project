@@ -27,7 +27,7 @@ class PostModelTest(TestCase):
             PostModelTest.post.text[:15],
             'Метод __str__ для Post возвращает некорректное значение',
         )
-        
+
     def test_post_verbone_name(self):
         """verbose_name в полях Post совпадает с ожидаемым."""
         post = PostModelTest.post
