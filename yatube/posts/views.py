@@ -13,7 +13,6 @@ def index(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
-        'title': 'Последние обновления на сайте',
         'page_obj': page_obj,
     }
 
@@ -104,3 +103,8 @@ def post_edit(request, post_id):
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)
+
+    return render(request, 'posts/create_post.html', {
+            'form': form,
+            'is_edit': True,
+        })

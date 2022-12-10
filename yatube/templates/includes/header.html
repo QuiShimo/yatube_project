@@ -34,8 +34,8 @@
       {% if user.is_authenticated %}
       <li class="nav-item"> 
         <a 
-          class="nav-link {% if view_name  == 'posts:post_create' %}active{% endif %}"
-          href="{% url 'posts:post_create' %}"
+          class="nav-link {% if view_name  == 'posts:create_post' %}active{% endif %}"
+          href="{% url 'posts:create_post' %}"
         >
           Новая запись
         </a>      </li>
