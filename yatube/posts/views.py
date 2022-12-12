@@ -105,6 +105,6 @@ def post_edit(request, post_id):
         return redirect('posts:post_detail', post_id)
 
     return render(request, 'posts/create_post.html', {
-            'form': form,
-            'is_edit': True,
-        })
+        'form': form,
+        'is_edit': True,
+    })

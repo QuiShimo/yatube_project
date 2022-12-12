@@ -10,11 +10,6 @@ class PostModelTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='test')
-        cls.group = Group.objects.create(
-            title='Тестовая группа',
-            slug='Тестовый слаг',
-            description='Тестовое описание',
-        )
         cls.post = Post.objects.create(
             author=cls.user,
             text='Тестовый текст',
@@ -23,7 +18,7 @@ class PostModelTest(TestCase):
     def test_post_str_method(self):
         """Метод __str__ для Post возвращает ожидаемое значение"""
         self.assertEqual(
-            PostModelTest.post.__str__(),
+            str(PostModelTest.post),
             PostModelTest.post.text[:15],
             'Метод __str__ для Post возвращает некорректное значение',
         )
@@ -60,17 +55,28 @@ class PostModelTest(TestCase):
                 self.assertEqual(
                     post._meta.get_field(value).help_text, expected)
 
+
+class GroupModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            slug='Тестовый слаг',
+            description='Тестовое описание',
+        )
+
     def test_group_str_method(self):
         """Метод __str__ для Group возвращает ожидаемое значение"""
         self.assertEqual(
-            PostModelTest.group.__str__(),
-            PostModelTest.group.title,
+            str(GroupModelTest.group),
+            GroupModelTest.group.title,
             'Метод __str__ для Group возвращает некорректное значение',
         )
 
     def test_group_verbone_name(self):
         """verbose_name в полях Group совпадает с ожидаемым."""
-        group = PostModelTest.group
+        group = GroupModelTest.group
         field_verboses = {
             'title': 'Название группы',
             'slug': 'Уникальная строка идентификатор группы',
@@ -83,7 +89,7 @@ class PostModelTest(TestCase):
 
     def test_group_help_text(self):
         """help_text в полях совпадает с ожидаемым."""
-        group = PostModelTest.group
+        group = GroupModelTest.group
         field_help_texts = {
             'title': ('Может состоять из символов латиницы и кириллицы, '
                       'а также содержать цифры'),

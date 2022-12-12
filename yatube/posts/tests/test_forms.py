@@ -12,10 +12,6 @@ class PostsFromTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create(username='testauthor')
-        cls.post = Post.objects.create(
-            author=PostsFromTest.user,
-            text='Тестовый текст',
-        )
 
     def setUp(self):
         self.auth_client = Client()
@@ -25,7 +21,6 @@ class PostsFromTest(TestCase):
         """Проверка формы создания поста"""
         posts_count = Post.objects.count()
         form_data = {
-            'author': PostsFromTest.user,
             'text': 'Тестовый пост',
         }
         self.auth_client.post(
@@ -33,16 +28,22 @@ class PostsFromTest(TestCase):
             data=form_data,
             follow=True,
         )
-
+        posts = Post.objects.filter(
+            author=PostsFromTest.user,
+            text='Тестовый пост',
+            group=None,
+        )
+        self.assertEqual(posts.count(), 1)
         self.assertNotEqual(posts_count, Post.objects.count())
 
     def test_edit_post(self):
+        post = Post.objects.create(
+            author=PostsFromTest.user,
+            text='Тестовый текст',
+        )
         post_count = Post.objects.count()
-        post_id = PostsFromTest.post.id
-        form_data = {
-            'text': 'Новый тестовый текст',
-        }
-
+        post_id = post.id
+        form_data = {'text': 'Новый тестовый текст'}
         self.auth_client.post(
             reverse(
                 'posts:post_edit',
@@ -51,6 +52,9 @@ class PostsFromTest(TestCase):
             data=form_data,
             follow=True,
         )
+
         edit_post = Post.objects.get(id=post_id)
+        self.assertEqual(edit_post.author, post.author)
         self.assertEqual(edit_post.text, 'Новый тестовый текст')
+        self.assertEqual(edit_post.group, post.group)
         self.assertEqual(post_count, Post.objects.count())

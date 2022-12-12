@@ -22,10 +22,6 @@ class PostsURLTest(TestCase):
             author=cls.user,
             text='Тестовый текст',
         )
-        cls.post_2 = Post.objects.create(
-            author=cls.user_2,
-            text='Тестовый текст',
-        )
         cls.page_and_template_for_guest = {
             '/': 'posts/index.html',
             '/group/testgroup/': 'posts/group_list.html',
@@ -52,7 +48,7 @@ class PostsURLTest(TestCase):
         '''
         urls_lists = PostsURLTest.page_and_template_for_guest
 
-        for urls in urls_lists.keys():
+        for urls in urls_lists:
             with self.subTest(value=urls):
                 response = self.guest_client.get(urls)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -93,7 +89,7 @@ class PostsURLTest(TestCase):
         для авторизованных пользователей
         '''
         urls_list = PostsURLTest.page_and_template_for_auth_user
-        for urls in urls_list.keys():
+        for urls in urls_list:
             with self.subTest(value=urls):
                 response = self.auth_client.get(urls)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -112,10 +108,12 @@ class PostsURLTest(TestCase):
     def test_posts_redirect_for_auth(self):
         '''
         Проверка корректности переадресации для авторизованных
-        пользователей
+        пользователей: при переходе на страницу редактирования поста, где
+        пользователь не автор - переадресация на страницу просмотра поста
         '''
-        response = self.auth_client.get('/posts/2/edit/')
-        self.assertRedirects(response, '/posts/2/')
+        self.auth_client.force_login(PostsURLTest.user_2)
+        response = self.auth_client.get('/posts/1/edit/')
+        self.assertRedirects(response, '/posts/1/')
 
     def test_posts_404_for_auth(self):
         '''Проверка ошибки 404 для неавторизованных пользователей'''
