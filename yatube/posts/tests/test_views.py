@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Group, Post
+from posts.models import Comments, Group, Post
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -165,7 +165,6 @@ class ContextTests(TestCase):
             slug='testgroup_2',
             description='Тестовое описание 2',
         )
-
         cls.test_image = (
              b'\x47\x49\x46\x38\x39\x61\x02\x00'
              b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -179,12 +178,16 @@ class ContextTests(TestCase):
             content=ContextTests.test_image,
             content_type='image/gif'
         )
-
         cls.post = Post.objects.create(
             author=ContextTests.user,
             text='Тестовый пост',
             group=ContextTests.group,
             image=ContextTests.test_uploaded
+        )
+        cls.comment = Comments.objects.create(
+            author=ContextTests.user,
+            text='Тестовый комментарий',
+            post=ContextTests.post,
         )
 
     @classmethod
@@ -240,6 +243,11 @@ class ContextTests(TestCase):
             )
         )
         self.posts_equals(response.context['post'], ContextTests.post)
+        comment = response.context['comments'][0]
+        self.assertEqual(comment.author, ContextTests.comment.author)
+        self.assertEqual(comment.text, ContextTests.comment.text)
+        self.assertEqual(comment.post, ContextTests.comment.post)
+        self.assertEqual(comment.created, ContextTests.comment.created)
 
     def test_post_group(self):
         """"Проверка, что созданный пост не попадает в другую группу"""

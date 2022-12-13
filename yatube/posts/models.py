@@ -70,7 +70,8 @@ class Post(models.Model):
         ),
     )
     image = models.ImageField(
-        'Картинка',
+        verbose_name='Картинка',
+        help_text='Картинка будет размещена вверху поста.',
         upload_to='posts/',
         blank=True,
     )
@@ -80,3 +81,29 @@ class Post(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+
+
+class Comments(models.Model):
+    text = models.TextField(
+        verbose_name='Текст комментария',
+        help_text='Напиши о чем угодно, но не обижай других пользователей',
+        blank=True,
+    )
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания комментария',
+        help_text=(
+            'Указывает на время создания комментария. Автоматически '
+            'проставляется текущее время, если не указана другая дата'
+        ),
+    )
+    post = models.ForeignKey(
+        Post,
+        related_name='comments',
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='comments',
+        on_delete=models.CASCADE,
+    )

@@ -71,6 +71,7 @@ class PostsURLTest(TestCase):
         пользователей
         '''
         page_redirect_list = {
+            '/posts/1/comment/': '/auth/login/?next=/posts/1/comment/',
             '/posts/1/edit/': '/auth/login/?next=/posts/1/edit/',
             '/create/': '/auth/login/?next=/create/',
         }
