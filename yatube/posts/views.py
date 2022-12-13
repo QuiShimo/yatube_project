@@ -1,10 +1,10 @@
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render, redirect
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
 
-from posts.models import Group, Post, User
 from posts.forms import PostForm
+from posts.models import Group, Post, User
 
 
 def index(request):
@@ -27,7 +27,6 @@ def group_posts(request, slug):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'title': f'Записи сообщества {group}',
         'group': group,
         'page_obj': page_obj,
     }
@@ -73,7 +72,10 @@ def post_create(request):
             'is_edit': False,
         })
 
-    form = PostForm(request.POST)
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+        )
     if form.is_valid():
         form.instance.author = request.user
         form.save()
@@ -99,7 +101,11 @@ def post_edit(request, post_id):
             'is_edit': True,
         })
 
-    form = PostForm(request.POST, instance=post)
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=post
+    )
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)

@@ -55,8 +55,13 @@
           Выйти
         </a>
       </li>
-      <li>
-        Пользователь: {{ user.username }}
+      <li class="nav-item">
+        <a 
+          class="nav-link {% if view_name == 'posts:profile'%} active {% endif %}"
+          href="{% url 'posts:profile' user.username %}"
+          >
+          Пользователь: {{ user.username }}
+        </a>
       </li>
       {% else %}
       <li class="nav-item"> 
