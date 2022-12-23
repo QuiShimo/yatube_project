@@ -2,12 +2,12 @@
 {% load thumbnail %}
 
 {% block title %}
-Последние обновления на сайте
+Последние обновления ваших авторов
 {% endblock title %}
 
 {% block content %}
   <div class="container py-5">
-    <h1>Последние обновления на сайте</h1>
+    <h1>Последние обновления ваших авторов</h1>
     {% include 'posts/includes/switcher.html' %}
     {% for post in page_obj %}
       <article>

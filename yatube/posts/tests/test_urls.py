@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, TestCase
 
 from posts.views import Group, Post
@@ -35,18 +36,20 @@ class PostsURLTest(TestCase):
             '/profile/testuser/': 'posts/profile.html',
             '/posts/1/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
+            '/follow/': 'posts/follow.html'
         }
 
     def setUp(self):
         self.guest_client = Client()
         self.auth_client = Client()
         self.auth_client.force_login(PostsURLTest.user)
+        cache.clear()
 
     def test_posts_url_correct_for_guest(self):
-        '''
+        """
         Проверка доступности страниц приложения posts
         для неавторизованных пользователей
-        '''
+        """
         urls_lists = PostsURLTest.page_and_template_for_guest
 
         for urls in urls_lists:
@@ -55,10 +58,10 @@ class PostsURLTest(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_posts_template_correct_for_guest(self):
-        '''
+        """
         Проверка корректности шаблона для страниц приложения posts
         для неавторизованных пользователей
-        '''
+        """
         urls_lists = PostsURLTest.page_and_template_for_guest
         for urls, template in urls_lists.items():
             with self.subTest(value=urls):
@@ -66,12 +69,18 @@ class PostsURLTest(TestCase):
                 self.assertTemplateUsed(response, template)
 
     def test_posts_redirect_for_guests(self):
-        '''
+        """
         Проверка корректности переадресации для неавторизованных
         пользователей
-        '''
+        """
         page_redirect_list = {
             '/posts/1/comment/': '/auth/login/?next=/posts/1/comment/',
+            '/profile/testuser/follow/': (
+                '/auth/login/?next=/profile/testuser/follow/'
+            ),
+            '/profile/testuser/unfollow/': (
+                '/auth/login/?next=/profile/testuser/unfollow/'
+            ),
             '/posts/1/edit/': '/auth/login/?next=/posts/1/edit/',
             '/create/': '/auth/login/?next=/create/',
         }
@@ -81,15 +90,15 @@ class PostsURLTest(TestCase):
                 self.assertRedirects(response, url_redirect)
 
     def test_posts_404_for_guests(self):
-        '''Проверка ошибки 404 для неавторизованных пользователей'''
+        """Проверка ошибки 404 для неавторизованных пользователей"""
         response = self.guest_client.get('/unexisting_page/')
         self.assertEquals(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_posts_url_correct_for_auth_user(self):
-        '''
+        """
         Проверка доступности страниц приложения posts
         для авторизованных пользователей
-        '''
+        """
         urls_list = PostsURLTest.page_and_template_for_auth_user
         for urls in urls_list:
             with self.subTest(value=urls):
@@ -97,27 +106,39 @@ class PostsURLTest(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_posts_template_correct_for_auth_user(self):
-        '''
+        """
         Проверка корректности шаблона для страниц приложения posts
         для авторизованных пользователей
-        '''
+        """
         urls_list = PostsURLTest.page_and_template_for_auth_user
         for urls, template in urls_list.items():
             with self.subTest(value=urls):
                 response = self.auth_client.get(urls)
                 self.assertTemplateUsed(response, template)
 
-    def test_posts_redirect_for_auth(self):
-        '''
+    def test_posts_redirect_post_edit_for_auth(self):
+        """
         Проверка корректности переадресации для авторизованных
         пользователей: при переходе на страницу редактирования поста, где
         пользователь не автор - переадресация на страницу просмотра поста
-        '''
+        """
         self.auth_client.force_login(PostsURLTest.user_2)
         response = self.auth_client.get('/posts/1/edit/')
         self.assertRedirects(response, '/posts/1/')
 
+    def test_redirect_for_auth(self):
+        """Проверка редиректов для авторизованных пользователей"""
+        page_redirect_list = {
+            '/posts/1/comment/': '/posts/1/',
+            '/profile/testuser/follow/': '/profile/testuser/',
+            '/profile/testuser/unfollow/': '/profile/testuser/',
+        }
+        for url, url_redirect in page_redirect_list.items():
+            with self.subTest(value=url):
+                response = self.auth_client.get(url)
+                self.assertRedirects(response, url_redirect)
+
     def test_posts_404_for_auth(self):
-        '''Проверка ошибки 404 для неавторизованных пользователей'''
+        """Проверка ошибки 404 для неавторизованных пользователей"""
         response = self.auth_client.get('/unexisting_page/')
         self.assertEquals(response.status_code, HTTPStatus.NOT_FOUND)

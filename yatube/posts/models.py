@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import CheckConstraint, F, Q, UniqueConstraint
 
 User = get_user_model()
 
@@ -76,14 +77,14 @@ class Post(models.Model):
         blank=True,
     )
 
-    def __str__(self):
-        return self.text[:15]
-
     class Meta:
         ordering = ('-pub_date',)
 
+    def __str__(self):
+        return self.text[:15]
 
-class Comments(models.Model):
+
+class Comment(models.Model):
     text = models.TextField(
         verbose_name='Текст комментария',
         help_text='Напиши о чем угодно, но не обижай других пользователей',
@@ -101,9 +102,48 @@ class Comments(models.Model):
         Post,
         related_name='comments',
         on_delete=models.CASCADE,
+        verbose_name='Пост',
+        help_text='Указывает на пост, к которому создан комментарий.',
     )
     author = models.ForeignKey(
         User,
         related_name='comments',
         on_delete=models.CASCADE,
+        verbose_name='Автор',
+        help_text='Указывает на автора, который создал комментарий.',
     )
+
+    def __str__(self):
+        return self.text[:15]
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='follower',
+        on_delete=models.CASCADE,
+        verbose_name='Тот, кто подписывается',
+        help_text='Указывает на пользователя, который подписывается',
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='following',
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
+        help_text='Указывает на автора, на которого подписался пользователь.',
+    )
+
+    class Meta():
+        constraints = (
+            UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_follow',
+            ),
+            CheckConstraint(
+                check=~Q(user=F('author')),
+                name='check_follow',
+            ),
+        )
+
+    def __str__(self):
+        return f'{self.user.username} подписался на {self.author.username}'

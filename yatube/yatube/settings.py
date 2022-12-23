@@ -143,3 +143,11 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 POSTS_ON_PAGE = 10
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+CACHES_TIME = 20

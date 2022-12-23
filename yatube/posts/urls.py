@@ -7,6 +7,17 @@ app_name = 'posts'
 urlpatterns = [
     path('', views.index, name='index'),
     path('create/', views.post_create, name='create_post'),
+    path('follow/', views.follow_index, name='follow_index'),
+    path(
+        'profile/<str:username>/follow/',
+        views.profile_follow,
+        name='profile_follow'
+    ),
+    path(
+        'profile/<str:username>/unfollow/',
+        views.profile_unfollow,
+        name='profile_unfollow'
+    ),
     path('profile/<str:username>/', views.profile, name='profile'),
     path(
         'posts/<int:post_id>/comment/', views.add_comment, name='add_comment'
