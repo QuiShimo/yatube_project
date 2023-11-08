@@ -1,6 +1,6 @@
 coverage==6.5.0
 Django==2.2.19
-Pillow==9.3.0
+Pillow==10.0.1
 pytz==2022.4
 sorl-thumbnail==12.9.0
 sqlparse==0.4.3
